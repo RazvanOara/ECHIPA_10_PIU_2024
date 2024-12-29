@@ -1,8 +1,8 @@
-
+import DropdownMenu from "../DropDown/DropdownMenu";
 const Home = () => {
     return (
         <>
-            Hi from Home
+         <DropdownMenu/>
         </>
     );
 };
