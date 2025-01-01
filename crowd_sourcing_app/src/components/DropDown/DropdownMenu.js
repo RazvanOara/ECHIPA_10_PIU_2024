@@ -1,27 +1,23 @@
 import React, { useState } from 'react';
-import './DropdownMenu.css'; // Import custom CSS for styling
+import './DropdownMenu.css';
 
 const DropdownMenu = ({ onOptionChange }) => {
-  const [isOpen, setIsOpen] = useState(false); // State to manage open/close
+  const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => {
-    setIsOpen(!isOpen); // Toggle the dropdown visibility
+    setIsOpen(!isOpen);
   };
 
   const handleOptionClick = (option) => {
-    onOptionChange(option); // Pass the selected option to the parent component
-    setIsOpen(false); // Close the dropdown after selection
+    onOptionChange(option);
+    setIsOpen(false);
   };
 
   return (
     <div className={`dropdown-menu ${isOpen ? 'open' : 'closed'}`}>
-      {/* Custom dropdown button */}
       <div className="dropdown-button" onClick={toggleDropdown}>
-        Menu {/* Keep the button text static */}
-        <span className="arrow"> ▼</span> {/* Custom arrow */}
+        Menu <span className="arrow">▼</span>
       </div>
-
-      {/* Custom dropdown options */}
       {isOpen && (
         <ul className="dropdown-options">
           <li onClick={() => handleOptionClick('Option1')}>Semnaleaza o problema</li>
