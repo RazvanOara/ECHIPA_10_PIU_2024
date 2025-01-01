@@ -1,4 +1,3 @@
-/* Dropdown container */
 .dropdown-menu {
   position: absolute;
   top: 10px;
@@ -7,7 +6,6 @@
   font-family: 'Arial', sans-serif;
 }
 
-/* Style for the custom dropdown button */
 .dropdown-button {
   padding: 15px 30px;
   font-size: 20px;
@@ -24,19 +22,16 @@
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-/* Hover effect for the dropdown button */
 .dropdown-button:hover {
   background-color: #45a049;
   transform: scale(1.05);
 }
 
-/* Custom arrow for dropdown button */
 .arrow {
   font-size: 20px;
   margin-left: 10px;
 }
 
-/* Style for the dropdown options */
 .dropdown-options {
   list-style: none;
   margin: 0;
@@ -53,7 +48,6 @@
   overflow: hidden;
 }
 
-/* Style for each option */
 .dropdown-options li {
   padding: 20px;
   font-size: 20px;
@@ -63,13 +57,11 @@
   text-align: center;
 }
 
-/* Hover effect for options */
 .dropdown-options li:hover {
   background-color: #f1f1f1;
   transform: scale(1.05);
 }
 
-/* Animation for opening/closing the dropdown */
 .dropdown-menu.open .dropdown-options {
   max-height: 300px;
   padding-bottom: 10px;
