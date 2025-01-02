@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import markImage from '../../assets/mark.png';
-import '../../stylesheets/popupStyles.css';
+import './popupStyles.css';
 
 const customIcon = new L.Icon({
   iconUrl: markImage,
@@ -12,23 +12,16 @@ const customIcon = new L.Icon({
   popupAnchor: [0, -32],
 });
 
-const MapComponent = ({ markers, onMapClick, onMarkerClick }) => {
+const MapComponent = ({ markers, onMapClick }) => {
   const initialCoords = [46.7712, 23.6236];
-  const [activePopup, setActivePopup] = useState(null); // Track the currently active popup
 
   const MapClickHandler = () => {
     useMapEvents({
       click: (e) => {
         onMapClick(e);
-        setActivePopup(null); // Close the popup when clicking on the map
       },
     });
     return null;
-  };
-
-  const handleMarkerClick = (marker) => {
-    setActivePopup(marker); // Set the active marker to show its popup
-    onMarkerClick(marker); // Trigger any additional actions when a marker is clicked
   };
 
   return (
@@ -48,15 +41,11 @@ const MapComponent = ({ markers, onMapClick, onMarkerClick }) => {
           position={[marker.lat, marker.lng]}
           icon={customIcon}
         >
-          <Popup
-            open={activePopup === marker} // Only open this popup if it's the active one
-            onClose={() => setActivePopup(null)} // Close the popup when it's closed
-          >
+          <Popup>
             <div className="popup-content">
               <strong>Description:</strong> {marker.description} <br />
               <strong>Status:</strong> {marker.status} <br />
-              <strong>Location:</strong> {marker.lat.toFixed(4)}, {marker.lng.toFixed(4)} <br />
-              <button className="marker-details-button" onClick={() => handleMarkerClick(marker)}>Vezi Solutii</button>
+              <strong>Location:</strong> {marker.lat.toFixed(4)}, {marker.lng.toFixed(4)}
             </div>
           </Popup>
         </Marker>
