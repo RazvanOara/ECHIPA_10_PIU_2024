@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './DropdownMenu.css';
+import '../../stylesheets/DropdownMenu.css';
 
 const DropdownMenu = ({ onOptionChange }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,8 +23,14 @@ const DropdownMenu = ({ onOptionChange }) => {
           <li onClick={() => handleOptionClick('Semnaleaza o problema')}>
             Semnaleaza o problema
           </li>
-          <li onClick={() => handleOptionClick('Option 2')}>Option 2</li>
-          <li onClick={() => handleOptionClick('Option 3')}>Option 3</li>
+          <li onClick={() => handleOptionClick('Filtreaza')}>Filtreaza</li>
+          <li onClick={() => handleOptionClick('Evenimente comunitare')}>
+            Evenimente comunitare
+          </li>
+          <li onClick={() => handleOptionClick('Rezervare sedinte politie')}>
+            Rezervare sedinte politie
+          </li>
+          <li onClick={() => handleOptionClick('Campanii')}>Campanii</li>
         </ul>
       )}
     </div>
