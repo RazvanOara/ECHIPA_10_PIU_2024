@@ -14,21 +14,21 @@ const customIcon = new L.Icon({
 
 const MapComponent = ({ markers, onMapClick, onMarkerClick }) => {
   const initialCoords = [46.7712, 23.6236];
-  const [activePopup, setActivePopup] = useState(null); // Track the currently active popup
+  const [activePopup, setActivePopup] = useState(null); 
 
   const MapClickHandler = () => {
     useMapEvents({
       click: (e) => {
         onMapClick(e);
-        setActivePopup(null); // Close the popup when clicking on the map
+        setActivePopup(null); 
       },
     });
     return null;
   };
 
   const handleMarkerClick = (marker) => {
-    setActivePopup(marker); // Set the active marker to show its popup
-    onMarkerClick(marker); // Trigger any additional actions when a marker is clicked
+    setActivePopup(marker); 
+    onMarkerClick(marker); 
   };
 
   return (
@@ -49,13 +49,14 @@ const MapComponent = ({ markers, onMapClick, onMarkerClick }) => {
           icon={customIcon}
         >
           <Popup
-            open={activePopup === marker} // Only open this popup if it's the active one
-            onClose={() => setActivePopup(null)} // Close the popup when it's closed
+            open={activePopup === marker} 
+            onClose={() => setActivePopup(null)} 
           >
             <div className="popup-content">
               <strong>Description:</strong> {marker.description} <br />
               <strong>Status:</strong> {marker.status} <br />
               <strong>Location:</strong> {marker.lat.toFixed(4)}, {marker.lng.toFixed(4)} <br />
+              <strong>Created On:</strong> {marker.date} <br /> 
               <button className="marker-details-button" onClick={() => handleMarkerClick(marker)}>Vezi Solutii</button>
             </div>
           </Popup>
