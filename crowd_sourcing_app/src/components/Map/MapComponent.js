@@ -2,23 +2,23 @@ import React from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import markImage from '../../assets/mark.jpg'; // Correct relative path
-import './popupStyles.css'; // Import the CSS file
+import markImage from '../../assets/mark.png';
+import './popupStyles.css';
 
 const customIcon = new L.Icon({
-  iconUrl: markImage, // Use the imported image here
-  iconSize: [32, 32], // Adjust the size of the icon
-  iconAnchor: [16, 32], // Anchor the icon (center bottom)
-  popupAnchor: [0, -32], // Position of the popup relative to the icon
+  iconUrl: markImage,
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
 });
 
 const MapComponent = ({ markers, onMapClick }) => {
-  const initialCoords = [46.7712, 23.6236]; // Initial map center
+  const initialCoords = [46.7712, 23.6236];
 
   const MapClickHandler = () => {
     useMapEvents({
       click: (e) => {
-        onMapClick(e); // Pass the click event to the parent
+        onMapClick(e);
       },
     });
     return null;
@@ -39,9 +39,9 @@ const MapComponent = ({ markers, onMapClick }) => {
         <Marker
           key={index}
           position={[marker.lat, marker.lng]}
-          icon={customIcon} // Use the custom icon here
+          icon={customIcon}
         >
-          <Popup className="custom-popup">
+          <Popup>
             <div className="popup-content">
               <strong>Description:</strong> {marker.description} <br />
               <strong>Status:</strong> {marker.status} <br />
