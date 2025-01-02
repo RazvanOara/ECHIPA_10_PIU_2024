@@ -6,7 +6,12 @@ const ProblemModal = ({ onClose, onSubmit }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSubmit(description);
+        onSubmit(description); 
+        setDescription(''); 
+    };
+
+    const handleChange = (e) => {
+        setDescription(e.target.value); 
     };
 
     return (
@@ -17,9 +22,9 @@ const ProblemModal = ({ onClose, onSubmit }) => {
                     <label>
                         Detalii Problema:
                         <textarea
-                            required
                             value={description}
-                            onChange={(e) => setDescription(e.target.value)}
+                            onChange={handleChange}
+                            required
                         />
                     </label>
                     <div className="modal-buttons">
