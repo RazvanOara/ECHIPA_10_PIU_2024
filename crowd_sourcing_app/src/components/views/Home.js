@@ -15,6 +15,7 @@ const Home = () => {
   const [modalData, setModalData] = useState(null);
   const [isFiltering, setIsFiltering] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedType, setSelectedType] = useState('');
   const [clickedMarker, setClickedMarker] = useState(null);
   const [isSolutionsPopupOpen, setIsSolutionsPopupOpen] = useState(false);
   const [newSolution, setNewSolution] = useState('');
@@ -36,11 +37,14 @@ const Home = () => {
 
   const handleOptionChange = (option) => {
     if (option === 'Semnaleaza o problema') {
-      setIsAddingMarker(true);
+      // Disable filtering when adding a marker
       setIsFiltering(false);
+      setSelectedStatus('');
+      setSelectedType('');
+      setIsAddingMarker(true);  // Enable marker adding mode
     } else if (option === 'Filtreaza') {
       setIsFiltering(true);
-      setIsAddingMarker(false);
+      setIsAddingMarker(false);  // Disable marker adding mode
     } else if (option === 'Evenimente comunitare') {
       setActivePopup('communityEvents');
     } else if (option === 'Rezervare sedinte politie') {
@@ -49,55 +53,93 @@ const Home = () => {
       setActivePopup('campaigns');
     }
   };
+  
 
   const handlePopupClose = () => {
     setActivePopup(null);
   };
 
-  const handleMapClick = (e) => {
+  const handleMapClick = async (e) => {
     if (isAddingMarker) {
       const { lat, lng } = e.latlng;
-      setModalData({ lat, lng });
-      setIsAddingMarker(false);
-    }
-  };
-
-  const handleModalSubmit = (description) => {
-    if (modalData) {
-      const currentDate = new Date().toLocaleDateString();
-      const newMarker = {
-        lat: modalData.lat,
-        lng: modalData.lng,
-        description,
-        status: "In Desfasurare",
-        date: currentDate,
-        solutions: []
+  
+      // Fetch address using reverse geocoding
+      const fetchAddress = async () => {
+        console.log('API call is in progress...');
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`
+          );
+          const data = await response.json();
+          console.log('done');
+          return data.address;
+        } catch (error) {
+          console.error("Failed to fetch address:", error);
+          return null;
+        }
       };
   
-      setMarkers((prevMarkers) => {
-        const updatedMarkers = [...prevMarkers, newMarker];
-        return updatedMarkers;
-      });
-      setModalData(null);
+      const address = await fetchAddress();
+      const street = address?.road || "Stradă necunoscută";
+      const houseNumber = address?.house_number || "";
+      const fullAddress = houseNumber ? `${street} ${houseNumber}` : street;
+  
+      setModalData({ lat, lng, address: fullAddress });
+      setIsAddingMarker(false);
+  
+      // Ensure no map repositioning here unless explicitly needed
+      // Avoid setting the map center here
     }
   };
+  
+
+const handleModalSubmit = ({ description, category }) => {
+  if (modalData) {
+    const currentDate = new Date().toLocaleDateString();
+    const iconMap = {
+      Infrastructura: 'infr_mark.png',
+      Social: 'social_mark.png',
+      Circulatie: 'road_mark.png',
+      Siguranta: 'health_mark.png',
+    };
+
+    const newMarker = {
+      lat: modalData.lat,
+      lng: modalData.lng,
+      description,
+      category, // Store the category here
+      status: "In Desfasurare",
+      date: currentDate,
+      address: modalData.address, // Include the address in the marker data
+      solutions: [],
+      icon: iconMap[category] || 'default_icon.png', // Ensure you use the correct icon
+    };
+
+    setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
+    setModalData(null);
+  }
+};
+
+
+
 
   const handleModalClose = () => {
     setModalData(null);
   };
 
-  const handleFilterClose = (status) => {
-    setSelectedStatus(status);
+  const handleFilterClose = (status, type) => {
+    setSelectedStatus(status);  // Update status
+    setSelectedType(type);      // Update type
     setIsFiltering(false);
 
-    if (status && status !== '') {
-      const filteredMarkers = originalMarkers.filter((marker) => {
-        return marker.status.toLowerCase() === status.toLowerCase();
-      });
-      setMarkers(filteredMarkers);
-    } else {
-      setMarkers(originalMarkers);
-    }
+    // Filter markers based on both status and type
+    const filteredMarkers = originalMarkers.filter((marker) => {
+      const matchesStatus = status ? marker.status.toLowerCase() === status.toLowerCase() : true;
+      const matchesType = type ? marker.category.toLowerCase() === type.toLowerCase() : true;
+      return matchesStatus && matchesType;
+    });
+
+    setMarkers(filteredMarkers);
   };
 
   const handleSolutionsPopupClose = () => {
@@ -132,6 +174,7 @@ const Home = () => {
 
   return (
     <div>
+      
       <DropdownMenu onOptionChange={handleOptionChange} />
       <MapComponent markers={markers} onMapClick={handleMapClick} onMarkerClick={handleShowSolutions} />
       {modalData && (
@@ -140,12 +183,15 @@ const Home = () => {
           onSubmit={handleModalSubmit}
         />
       )}
-      {isFiltering && (
-        <FilteringPopup 
-          onClose={handleFilterClose} 
-          selectedStatus={selectedStatus}
-        />
-      )}
+     {isFiltering && (
+  <FilteringPopup 
+    onClose={handleFilterClose} 
+    selectedStatus={selectedStatus}
+    selectedType={selectedType} // Pass selectedType here
+  />
+  
+)}
+
 
       {isSolutionsPopupOpen && (
         <SolutionsPopup
