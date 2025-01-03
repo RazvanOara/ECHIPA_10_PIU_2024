@@ -8,7 +8,7 @@
 
 .dropdown-button {
   padding: 15px 30px;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
   background-color: #4CAF50;
   color: white;
@@ -17,7 +17,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 200px;
+  width: 220px;
   text-align: center;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
@@ -28,7 +28,7 @@
 }
 
 .arrow {
-  font-size: 20px;
+  font-size: 22px;
   margin-left: 10px;
 }
 
@@ -43,14 +43,15 @@
   top: 60px;
   left: 50%;
   transform: translateX(-50%);
-  width: 200px;
+  width: 220px;
+  max-height: 300px;
+  overflow-y: auto;
   transition: max-height 0.3s ease, padding 0.3s ease;
-  overflow: hidden;
 }
 
 .dropdown-options li {
-  padding: 20px;
-  font-size: 20px;
+  padding: 15px;
+  font-size: 18px;
   color: #333;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;

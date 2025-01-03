@@ -1,11 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '../../stylesheets/ProblemModal.css';
 
-const ProblemModal = ({ onClose }) => {
+const ProblemModal = ({ onClose, onSubmit }) => {
+    const [description, setDescription] = useState('');
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        alert('Problem submitted successfully!');
-        onClose();
+        onSubmit(description); 
+        setDescription(''); 
+    };
+
+    const handleChange = (e) => {
+        setDescription(e.target.value); 
     };
 
     return (
@@ -15,7 +21,11 @@ const ProblemModal = ({ onClose }) => {
                 <form onSubmit={handleSubmit}>
                     <label>
                         Detalii Problema:
-                        <textarea required />
+                        <textarea
+                            value={description}
+                            onChange={handleChange}
+                            required
+                        />
                     </label>
                     <div className="modal-buttons">
                         <button type="submit">Trimite</button>
