@@ -2,34 +2,33 @@ import React, { useState, useEffect } from 'react';
 import DropdownMenu from "../modals/DropdownMenu";
 import MapComponent from "../Map/MapComponent";
 import ProblemModal from "../modals/ProblemModal";
-import FilteringPopup from "../modals/FilteringPopup"; // Import FilteringPopup
-import SolutionsPopup from "../modals/SolutionsPopup"; // Import the SolutionsPopup
-import CommunityEventsPopup from "../modals/CommunityEventsPopup"; // Import the CommunityEventsPopup
-import PoliceMeetingsPopup from "../modals/PoliceMeetingsPopup"; // Import the PoliceMeetingsPopup
-import CampaignsPopup from "../modals/CampaignsPopup"; // Import the CampaignsPopup
+import FilteringPopup from "../modals/FilteringPopup";
+import SolutionsPopup from "../modals/SolutionsPopup";
+import CommunityEventsPopup from "../modals/CommunityEventsPopup";
+import PoliceMeetingsPopup from "../modals/PoliceMeetingsPopup";
+import CampaignsPopup from "../modals/CampaignsPopup";
 
 const Home = () => {
-  const [markers, setMarkers] = useState([]); // Currently displayed markers
-  const [originalMarkers, setOriginalMarkers] = useState([]); // Store original markers
+  const [markers, setMarkers] = useState([]);
+  const [originalMarkers, setOriginalMarkers] = useState([]);
   const [isAddingMarker, setIsAddingMarker] = useState(false);
   const [modalData, setModalData] = useState(null);
-  const [isFiltering, setIsFiltering] = useState(false); // Track if filtering popup is shown
-  const [selectedStatus, setSelectedStatus] = useState(''); // Track the selected filter status
-  const [clickedMarker, setClickedMarker] = useState(null); // Track the clicked marker for solutions
-  const [isSolutionsPopupOpen, setIsSolutionsPopupOpen] = useState(false); // Track if the solutions popup is open
-  const [newSolution, setNewSolution] = useState(''); // Track the new solution text
-  const [activePopup, setActivePopup] = useState(null); // Track which popup is active
+  const [isFiltering, setIsFiltering] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedType, setSelectedType] = useState('');
+  const [clickedMarker, setClickedMarker] = useState(null);
+  const [isSolutionsPopupOpen, setIsSolutionsPopupOpen] = useState(false);
+  const [newSolution, setNewSolution] = useState('');
+  const [activePopup, setActivePopup] = useState(null);
 
-  // Load markers from localStorage when the component mounts
   useEffect(() => {
     const storedMarkers = JSON.parse(localStorage.getItem('markers'));
     if (storedMarkers) {
       setMarkers(storedMarkers);
-      setOriginalMarkers(storedMarkers); // Store the original markers
+      setOriginalMarkers(storedMarkers);
     }
   }, []);
 
-  // Save markers to localStorage whenever they change
   useEffect(() => {
     if (markers.length > 0) {
       localStorage.setItem('markers', JSON.stringify(markers));
@@ -38,78 +37,118 @@ const Home = () => {
 
   const handleOptionChange = (option) => {
     if (option === 'Semnaleaza o problema') {
-      setIsAddingMarker(true); // Enable marker addition mode
-      setIsFiltering(false); // Close filtering popup if it was open
+      // Disable filtering when adding a marker
+      setIsFiltering(false);
+      setSelectedStatus('');
+      setSelectedType('');
+      setIsAddingMarker(true);  // Enable marker adding mode
     } else if (option === 'Filtreaza') {
-      setIsFiltering(true); // Show the filtering popup
-      setIsAddingMarker(false); // Close marker addition mode if it was open
+      setIsFiltering(true);
+      setIsAddingMarker(false);  // Disable marker adding mode
     } else if (option === 'Evenimente comunitare') {
-      setActivePopup('communityEvents'); // Show the community events popup
+      setActivePopup('communityEvents');
     } else if (option === 'Rezervare sedinte politie') {
-      setActivePopup('policeMeetings'); // Show the police meetings popup
+      setActivePopup('policeMeetings');
     } else if (option === 'Campanii') {
-      setActivePopup('campaigns'); // Show the campaigns popup
+      setActivePopup('campaigns');
     }
   };
+  
 
   const handlePopupClose = () => {
-    setActivePopup(null); // Close the active popup
+    setActivePopup(null);
   };
 
-  const handleMapClick = (e) => {
+  const handleMapClick = async (e) => {
     if (isAddingMarker) {
       const { lat, lng } = e.latlng;
-      setModalData({ lat, lng }); // Store the clicked location
-      setIsAddingMarker(false); // Disable marker addition mode
-    }
-  };
-
-  const handleModalSubmit = (description) => {
-    if (modalData) {
-      const currentDate = new Date().toLocaleString();
-      const newMarker = {
-        lat: modalData.lat,
-        lng: modalData.lng,
-        description,
-        status: "In Desfasurare", // Make sure the status is set correctly
-        date: currentDate,
-        solutions: [] // Initialize solutions as an empty array
+  
+      // Fetch address using reverse geocoding
+      const fetchAddress = async () => {
+        console.log('API call is in progress...');
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`
+          );
+          const data = await response.json();
+          console.log('done');
+          return data.address;
+        } catch (error) {
+          console.error("Failed to fetch address:", error);
+          return null;
+        }
       };
-
-      setMarkers((prevMarkers) => {
-        const updatedMarkers = [...prevMarkers, newMarker];
-        return updatedMarkers;
-      });
-      setModalData(null); // Close the modal
+  
+      const address = await fetchAddress();
+      const street = address?.road || "Stradă necunoscută";
+      const houseNumber = address?.house_number || "";
+      const fullAddress = houseNumber ? `${street} ${houseNumber}` : street;
+  
+      setModalData({ lat, lng, address: fullAddress });
+      setIsAddingMarker(false);
+  
+      // Ensure no map repositioning here unless explicitly needed
+      // Avoid setting the map center here
     }
   };
+  
+
+const handleModalSubmit = ({ description, category }) => {
+  if (modalData) {
+    const currentDate = new Date().toLocaleDateString();
+    const iconMap = {
+      Infrastructura: 'infr_mark.png',
+      Social: 'social_mark.png',
+      Circulatie: 'road_mark.png',
+      Siguranta: 'health_mark.png',
+    };
+
+    const newMarker = {
+      lat: modalData.lat,
+      lng: modalData.lng,
+      description,
+      category, // Store the category here
+      status: "In Desfasurare",
+      date: currentDate,
+      address: modalData.address, // Include the address in the marker data
+      solutions: [],
+      icon: iconMap[category] || 'default_icon.png', // Ensure you use the correct icon
+    };
+
+    setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
+    setModalData(null);
+  }
+};
+
+
+
 
   const handleModalClose = () => {
-    setModalData(null); // Close the modal without adding a marker
+    setModalData(null);
   };
 
-  const handleFilterClose = (status) => {
-    setSelectedStatus(status); // Set the selected status when the filter is applied
-    setIsFiltering(false); // Close the filtering popup
+  const handleFilterClose = (status, type) => {
+    setSelectedStatus(status);  // Update status
+    setSelectedType(type);      // Update type
+    setIsFiltering(false);
 
-    // Filter markers based on selected status
-    if (status && status !== '') {
-      const filteredMarkers = originalMarkers.filter((marker) => {
-        return marker.status.toLowerCase() === status.toLowerCase();
-      });
-      setMarkers(filteredMarkers); // Set the filtered markers
-    } else {
-      setMarkers(originalMarkers); // Reset to original markers
-    }
+    // Filter markers based on both status and type
+    const filteredMarkers = originalMarkers.filter((marker) => {
+      const matchesStatus = status ? marker.status.toLowerCase() === status.toLowerCase() : true;
+      const matchesType = type ? marker.category.toLowerCase() === type.toLowerCase() : true;
+      return matchesStatus && matchesType;
+    });
+
+    setMarkers(filteredMarkers);
   };
 
   const handleSolutionsPopupClose = () => {
-    setIsSolutionsPopupOpen(false); // Close the solutions popup
+    setIsSolutionsPopupOpen(false);
   };
 
   const handleShowSolutions = (marker) => {
-    setClickedMarker(marker); // Set the clicked marker
-    setIsSolutionsPopupOpen(true); // Open the solutions popup
+    setClickedMarker(marker);
+    setIsSolutionsPopupOpen(true);
   };
 
   const handleAddSolution = (solution) => {
@@ -118,10 +157,9 @@ const Home = () => {
         if (marker === clickedMarker) {
           const updatedMarker = {
             ...marker,
-            solutions: [...marker.solutions, solution] // Add new solution to the marker's solutions
+            solutions: [...marker.solutions, solution]
           };
 
-          // Update the clickedMarker state to trigger a re-render of SolutionsPopup
           setClickedMarker(updatedMarker);
 
           return updatedMarker;
@@ -129,13 +167,14 @@ const Home = () => {
         return marker;
       });
 
-      setMarkers(updatedMarkers); // Update markers with the new solution
-      setNewSolution(''); // Clear the input field
+      setMarkers(updatedMarkers);
+      setNewSolution('');
     }
   };
 
   return (
     <div>
+      
       <DropdownMenu onOptionChange={handleOptionChange} />
       <MapComponent markers={markers} onMapClick={handleMapClick} onMarkerClick={handleShowSolutions} />
       {modalData && (
@@ -144,23 +183,24 @@ const Home = () => {
           onSubmit={handleModalSubmit}
         />
       )}
-      {isFiltering && (
-        <FilteringPopup 
-          onClose={handleFilterClose} 
-          selectedStatus={selectedStatus} // Pass the selected status to FilteringPopup
-        />
-      )}
+     {isFiltering && (
+  <FilteringPopup 
+    onClose={handleFilterClose} 
+    selectedStatus={selectedStatus}
+    selectedType={selectedType} // Pass selectedType here
+  />
+  
+)}
 
-      {/* Solutions Popup */}
+
       {isSolutionsPopupOpen && (
         <SolutionsPopup
           onClose={handleSolutionsPopupClose}
-          marker={clickedMarker} // Pass the clicked marker to the solutions popup
-          handleAddSolution={handleAddSolution} // Function to add a solution
+          marker={clickedMarker}
+          handleAddSolution={handleAddSolution}
         />
       )}
 
-      {/* Show the appropriate popup based on the active state */}
       {activePopup === 'communityEvents' && (
         <CommunityEventsPopup onClose={handlePopupClose} />
       )}
