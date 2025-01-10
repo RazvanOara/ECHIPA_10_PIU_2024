@@ -107,4 +107,21 @@
     background-color: #004085;
     transform: scale(0.98);
   }
+
+  .solution-item {
+    margin-bottom: 20px;
+  }
+  
+  .rating-container {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+  }
+  
+  .rating-container span {
+    margin-left: 10px;
+    font-size: 14px;
+    color: #555;
+  }
+  
   

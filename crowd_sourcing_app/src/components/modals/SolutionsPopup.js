@@ -1,8 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../../stylesheets/SolutionsPopup.css';
+import Rating from 'react-rating-stars-component';
 
 const SolutionsPopup = ({ onClose, marker, handleAddSolution }) => {
   const [newSolution, setNewSolution] = useState('');
+  const [ratings, setRatings] = useState({}); // Stocăm rating-urile curente în memorie
+
+  // La montarea componentei, încarcă rating-urile salvate din localStorage
+  useEffect(() => {
+    const savedRatings = JSON.parse(localStorage.getItem(`ratings_${marker.description}`)) || {};
+    setRatings(savedRatings);
+  }, [marker.description]);
 
   const handleSolutionChange = (e) => {
     setNewSolution(e.target.value);
@@ -11,8 +19,20 @@ const SolutionsPopup = ({ onClose, marker, handleAddSolution }) => {
   const handleSaveSolution = () => {
     if (newSolution) {
       handleAddSolution(newSolution);
-      setNewSolution(''); 
+      setNewSolution('');
     }
+  };
+
+  const handleRatingChange = (index, newRating) => {
+    setRatings((prevRatings) => ({
+      ...prevRatings,
+      [index]: newRating,
+    }));
+  };
+
+  const saveRatingsToLocalStorage = () => {
+    localStorage.setItem(`ratings_${marker.description}`, JSON.stringify(ratings));
+    alert('Ratings saved!'); // Mesaj opțional pentru utilizator
   };
 
   return (
@@ -23,12 +43,24 @@ const SolutionsPopup = ({ onClose, marker, handleAddSolution }) => {
         <div className="solutions-container">
           {marker.solutions && marker.solutions.length > 0 ? (
             marker.solutions.map((solution, index) => (
-              <textarea
-                key={index}
-                value={solution}
-                readOnly
-                className="solution-textarea"
-              />
+              <div key={index} className="solution-item">
+                <textarea
+                  value={solution}
+                  readOnly
+                  className="solution-textarea"
+                />
+                {/* Componenta de rating */}
+                <div className="rating-container">
+                  <Rating
+                    count={5}
+                    size={24}
+                    activeColor="#ffd700"
+                    value={ratings[index] || 0} // Default 0 dacă nu există rating salvat
+                    onChange={(newRating) => handleRatingChange(index, newRating)}
+                  />
+                  <span>{ratings[index] ? `Rating: ${ratings[index]}` : 'No rating yet'}</span>
+                </div>
+              </div>
             ))
           ) : (
             <p>No solutions yet.</p>
@@ -42,7 +74,10 @@ const SolutionsPopup = ({ onClose, marker, handleAddSolution }) => {
           className="new-solution-textarea"
         />
         <button className="save-button" onClick={handleSaveSolution}>
-          Save
+          Save Solution
+        </button>
+        <button className="save-button" onClick={saveRatingsToLocalStorage}>
+          Save Ratings
         </button>
         <button onClick={onClose}>Close</button>
       </div>
