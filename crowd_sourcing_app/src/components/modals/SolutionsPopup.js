@@ -4,9 +4,8 @@ import Rating from 'react-rating-stars-component';
 
 const SolutionsPopup = ({ onClose, marker, handleAddSolution }) => {
   const [newSolution, setNewSolution] = useState('');
-  const [ratings, setRatings] = useState({}); // Stocăm rating-urile curente în memorie
+  const [ratings, setRatings] = useState({});
 
-  // La montarea componentei, încarcă rating-urile salvate din localStorage
   useEffect(() => {
     const savedRatings = JSON.parse(localStorage.getItem(`ratings_${marker.description}`)) || {};
     setRatings(savedRatings);
@@ -32,7 +31,7 @@ const SolutionsPopup = ({ onClose, marker, handleAddSolution }) => {
 
   const saveRatingsToLocalStorage = () => {
     localStorage.setItem(`ratings_${marker.description}`, JSON.stringify(ratings));
-    alert('Ratings saved!'); // Mesaj opțional pentru utilizator
+    alert('Ratings saved!');
   };
 
   return (
@@ -40,31 +39,37 @@ const SolutionsPopup = ({ onClose, marker, handleAddSolution }) => {
       <div className="popup-content">
         <h2>Solutii pentru: {marker.description}</h2>
         <p>Status: {marker.status}</p>
-        <div className="solutions-container">
-          {marker.solutions && marker.solutions.length > 0 ? (
-            marker.solutions.map((solution, index) => (
-              <div key={index} className="solution-item">
-                <textarea
-                  value={solution}
-                  readOnly
-                  className="solution-textarea"
-                />
-                {/* Componenta de rating */}
-                <div className="rating-container">
-                  <Rating
-                    count={5}
-                    size={24}
-                    activeColor="#ffd700"
-                    value={ratings[index] || 0} // Default 0 dacă nu există rating salvat
-                    onChange={(newRating) => handleRatingChange(index, newRating)}
-                  />
-                  <span>{ratings[index] ? `Rating: ${ratings[index]}` : 'No rating yet'}</span>
+
+        <div className="scroll-panel">
+          <div className="solutions-container">
+            {marker.solutions && marker.solutions.length > 0 ? (
+              marker.solutions.map((solution, index) => (
+                <div key={index} className="solution-item">
+                  <div className="solution-background">
+                    <textarea
+                      value={solution}
+                      readOnly
+                      className="solution-textarea"
+                    />
+                  </div>
+                  <div className="rating-background">
+                    <div className="rating-container">
+                      <Rating
+                        count={5}
+                        size={24}
+                        activeColor="#ffd700"
+                        value={ratings[index] || 0}
+                        onChange={(newRating) => handleRatingChange(index, newRating)}
+                      />
+                      <span>{ratings[index] ? `Rating: ${ratings[index]}` : 'No rating yet'}</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))
-          ) : (
-            <p>No solutions yet.</p>
-          )}
+              ))
+            ) : (
+              <p>No solutions yet.</p>
+            )}
+          </div>
         </div>
 
         <textarea
