@@ -8,7 +8,6 @@ const CommunityEventsPopup = ({ onClose }) => {
   const [newEventName, setNewEventName] = useState("");
   const [newEventDescription, setNewEventDescription] = useState("");
 
-  // Load events from local storage on mount
   useEffect(() => {
     const storedEvents = JSON.parse(localStorage.getItem("communityEvents")) || [
       {
@@ -23,7 +22,6 @@ const CommunityEventsPopup = ({ onClose }) => {
     setEvents(storedEvents);
   }, []);
 
-  // Save events to local storage
   const saveEventsToLocalStorage = (updatedEvents) => {
     localStorage.setItem("communityEvents", JSON.stringify(updatedEvents));
   };
@@ -33,7 +31,7 @@ const CommunityEventsPopup = ({ onClose }) => {
       alert(
         `Mulțumim, ${subscriberName}, pentru abonare la evenimentul ${selectedEvent.name}!`
       );
-      setSubscriberName(""); // Clear the input
+      setSubscriberName(""); 
     } else {
       alert(
         "Te rugăm să selectezi un eveniment și să introduci numele pentru a te abona."
@@ -67,7 +65,6 @@ const CommunityEventsPopup = ({ onClose }) => {
       <div className="popup-content">
         <h2>Evenimente Comunitare</h2>
         
-        {/* Event List */}
         <div className="event-list">
           <h3>Evenimente existente</h3>
           <ul>
@@ -86,7 +83,6 @@ const CommunityEventsPopup = ({ onClose }) => {
           </ul>
         </div>
 
-        {/* Selected Event Popup */}
         {selectedEvent && (
           <div className="event-popup">
             <h3>Eveniment Selectat</h3>
@@ -109,7 +105,6 @@ const CommunityEventsPopup = ({ onClose }) => {
           </div>
         )}
 
-        {/* Create New Event */}
         <div className="create-event-section">
           <h3>Crează un eveniment nou</h3>
           <input
