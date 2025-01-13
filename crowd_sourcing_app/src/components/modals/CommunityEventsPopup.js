@@ -43,8 +43,8 @@ const CommunityEventsPopup = ({ onClose }) => {
     if (newEventName.trim() && newEventDescription.trim()) {
       const newEvent = { name: newEventName, description: newEventDescription };
       const updatedEvents = [...events, newEvent];
-      setEvents(updatedEvents); // Update state
-      saveEventsToLocalStorage(updatedEvents); // Save to local storage
+      setEvents(updatedEvents); 
+      saveEventsToLocalStorage(updatedEvents); 
       setNewEventName("");
       setNewEventDescription("");
       alert("Eveniment creat cu succes!");
