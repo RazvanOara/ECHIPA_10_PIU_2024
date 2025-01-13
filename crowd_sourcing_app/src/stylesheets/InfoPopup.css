@@ -86,26 +86,30 @@
   font-weight: bold;
 }
 
-/* Selected Event Details */
-.event-details {
-  margin-top: 20px;
-  text-align: left;
-  border-top: 1px solid #ddd;
-  padding-top: 10px;
+.event-popup {
+  position: fixed; 
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%, -50%); 
+  z-index: 2000; 
+  background-color: white; 
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.event-details h3 {
+
+.event-popup h3 {
   font-size: 18px;
   margin-bottom: 10px;
   color: #333;
 }
 
-.event-details p {
+.event-popup p {
   font-size: 14px;
   color: #555;
 }
 
-/* Subscribe Section */
 .subscribe-section {
   margin-top: 20px;
   text-align: left;
@@ -126,7 +130,6 @@
   font-size: 16px;
 }
 
-/* Create Event Section */
 .create-event-section {
   margin-top: 30px;
   text-align: left;
